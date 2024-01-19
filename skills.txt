@@ -1,24 +1,53 @@
-skills = ["artificial intelligence","javascript","python", "sql", "aws", "data analysis", "communication", "financial analysis", "recruiting",
-    "training", "performance management", "advertising", "tableau", "marketing", "excel",
-    "sales", "digital marketing", "css", "project management", "html", "writing",
-    "content creation", "sem", "social media", "javascript", "erp", "critical thinking",
-    "analytics", "crm", "research", "seo", "design", "artificial intelligence",
-    "machine learning", "compliance", "accounting", "forecasting", "leadership",
-    "audit", "risk management", "legal", "budgeting", "databases", "teamwork", "java",
-    "linux", "windows", "network security", "agile", "scrum", "spring", "hibernate",
-    "supply chain", "logistics", "operations management", "negotiation", "cisco",
-    "quality assurance", "human resources", "business development", "c++", "git",
-    "data science", "big data", "deep learning", "r", "hadoop", "spark", "etl",
-    "data warehousing", "mysql", "sql server", "docker", "kubernetes", "ci/cd",
-    "jenkins", "electrical engineering", "autocad", "matlab", "power systems", "circuit design",
-    "organizational skills", "administrative skills", "microsoft office", "react", "angular",
-    "web development", "ux/ui design", "safety", "compliance", "auditing", "environmental health",
-    "process improvement", "lean manufacturing", "six sigma", "interior design", "3d modeling",
-    "photoshop", "financial analysis", "investment strategies", "economics", "troubleshooting",
-    "itil", "hardware support", "laboratory skills", "quality control", "chemistry", "biology",
-    "instrumentation", "legal research", "transportation management", "planning", "pharmaceutical industry",
-    "medical knowledge", "patient care", "healthcare", "time management", "organization",
-    "legal documentation", "prototyping", "product development", "creativity", "technical documentation",
-    "graphic design", "user research", "fabrication", "metalworking", "blueprint reading",
-    "mig/tig welding", "yoga teaching", "fitness", "health and wellness", "flexibility training"
-]
+instrumentation
+java
+aws
+communication
+crm
+kubernetes
+healthcare
+teamwork
+jenkins
+marketing
+organization
+sales
+agile
+tableau
+sql
+javascript
+databases
+hibernate
+erp
+mysql
+research
+html
+compliance
+itil
+windows
+python
+safety
+analytics
+spring
+audit
+accounting
+forecasting
+linux
+logistics
+troubleshooting
+design
+git
+economics
+advertising
+hadoop
+angular
+creativity
+prototyping
+leadership
+spark
+writing
+training
+cisco
+excel
+etl
+scrum
+planning
+recruiting

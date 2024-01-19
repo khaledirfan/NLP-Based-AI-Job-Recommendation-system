@@ -1,37 +1,22 @@
 import streamlit as st
+import numpy as np
 import fitz  # PyMuPDF
 import string
 from io import BytesIO
+import pickle
+with open('skills.txt', 'r') as file:
+    skills_text = file.read()
+with open('le.pkl' , 'rb') as f:
+    le = pickle.load(f)
+with open('ML_model.pkl' , 'rb') as f:
+    ml_model = pickle.load(f)
 from collections import Counter
 
-# Load your skills list
-skills = ["artificial intelligence","javascript","python", "sql", "aws", "data analysis", "communication", "financial analysis", "recruiting",
-    "training", "performance management", "advertising", "tableau", "marketing", "excel",
-    "sales", "digital marketing", "css", "project management", "html", "writing",
-    "content creation", "sem", "social media", "javascript", "erp", "critical thinking",
-    "analytics", "crm", "research", "seo", "design", "artificial intelligence",
-    "machine learning", "compliance", "accounting", "forecasting", "leadership",
-    "audit", "risk management", "legal", "budgeting", "databases", "teamwork", "java",
-    "linux", "windows", "network security", "agile", "scrum", "spring", "hibernate",
-    "supply chain", "logistics", "operations management", "negotiation", "cisco",
-    "quality assurance", "human resources", "business development", "c++", "git",
-    "data science", "big data", "deep learning", "r", "hadoop", "spark", "etl",
-    "data warehousing", "mysql", "sql server", "docker", "kubernetes", "ci/cd",
-    "jenkins", "electrical engineering", "autocad", "matlab", "power systems", "circuit design",
-    "organizational skills", "administrative skills", "microsoft office", "react", "angular",
-    "web development", "ux/ui design", "safety", "compliance", "auditing", "environmental health",
-    "process improvement", "lean manufacturing", "six sigma", "interior design", "3d modeling",
-    "photoshop", "financial analysis", "investment strategies", "economics", "troubleshooting",
-    "itil", "hardware support", "laboratory skills", "quality control", "chemistry", "biology",
-    "instrumentation", "legal research", "transportation management", "planning", "pharmaceutical industry",
-    "medical knowledge", "patient care", "healthcare", "time management", "organization",
-    "legal documentation", "prototyping", "product development", "creativity", "technical documentation",
-    "graphic design", "user research", "fabrication", "metalworking", "blueprint reading",
-    "mig/tig welding", "yoga teaching", "fitness", "health and wellness", "flexibility training"
-]
+# Load skills list
+skills = skills_text.split('\n')
+skills.pop()
 
-
-# Function to extract text from PDF and count occurrences of each skill
+# Function to extract text from PDF and create a binary array for each skill
 def process_cv(pdf_file, skills):
     # Read the content of the PDF
     def extract_text_from_pdf(pdf_file):
@@ -49,15 +34,15 @@ def process_cv(pdf_file, skills):
     # Preprocess the text (convert to lowercase)
     cv_text = cv_text.lower().translate(str.maketrans('', '', string.punctuation))
 
-    # Create Counter for skills occurrences
-    skills_counter = Counter()
+    # Create binary array for each skill
+    binary_array = []
 
-    # Count occurrences of each skill in the CV text
+    # Check presence of each skill in the CV text
     for skill in skills:
-        skill_occurrences = cv_text.count(skill)
-        skills_counter[skill] = skill_occurrences
+        skill_present = 1 if skill in cv_text else 0
+        binary_array.append(skill_present)
 
-    return skills_counter
+    return binary_array
 
 # Set Streamlit app title and page layout
 st.set_page_config(
@@ -86,30 +71,52 @@ st.markdown(
 # Main title and description
 st.title("Job Recommendation System")
 st.markdown("Welcome to the Job Recommendation System! Upload your CV and select work type to get job recommendations.")
-
+# st.write(skills)
 # File Upload
 uploaded_file = st.file_uploader("Upload PDF CV:", type=['pdf'])
 
 # Work Type Dropdown
-work_type = st.selectbox("Select Work Type:", ["Onsite", "Remote", "Hybrid"])
+work_type = st.selectbox("Select Work Type:", ["On-site", "Remote", "Hybrid"])
 
 # Prediction Button
-predict_button = st.button("Display Skill Counts and Predict Job Type")
+predict_button = st.button("Predict Job Type")
 
 # Display result when button is clicked
 if uploaded_file is not None and work_type and predict_button:
-    # Count occurrences of each skill in the CV
-    skill_counts = process_cv(uploaded_file, skills)
+    # Get the binary array indicating presence of each skill in the CV
+    binary_array = process_cv(uploaded_file, skills)
 
-    # Display skill counts greater than or equal to one
-    st.subheader("Skill Counts in CV:")
-    for skill, count in skill_counts.items():
-        if count >= 1:
-            st.write(f"{skill}: {count}")
-
-    # Generate predictions based on skill counts (you can customize this part based on your model)
-    predicted_job_type = "Software Developer"  # Replace with your actual prediction logic
+    # Display binary array
+    #st.subheader("Binary Array for Skill Presence:")
+    #for skill, is_present in zip(skills, binary_array):
+    #    st.write(f"{skill}: {is_present}")
 
     # Display the predicted job type
-    st.subheader("Predicted Job Type:")
-    st.write(predicted_job_type)
+    st.subheader("Predicted Job Types:")
+
+    input1 = []
+    work_type_arr = [work_type]
+    work_type_arr = le.transform(work_type_arr)
+    work_type_val = work_type_arr[0]
+
+    input1.append(work_type_val)
+    input1.extend(binary_array)
+    input_data = [input1]
+
+    predictions = ml_model.predict_proba(input_data)
+
+    # Get the indices of the top three classes for each prediction
+    top_three_classes = np.argsort(predictions)[:, -3:][0][::-1]
+    top_three_probabilities = np.sort(predictions)[:, -3:][0][::-1]
+    # st.write(top_three_classes)
+
+    # Get the actual class labels
+    class_labels = ml_model.classes_
+    # st.write(class_labels)
+
+    predicted_classes = class_labels[top_three_classes]
+
+    # Display the three most probable classes for each prediction
+    for i, prediction in enumerate(predicted_classes):
+        st.markdown(f"Prediction {i + 1}: {prediction}, Probability: {top_three_probabilities[i]:.4f}")
+        # st.markdown(f"Prediction {i + 1}: {prediction}")
